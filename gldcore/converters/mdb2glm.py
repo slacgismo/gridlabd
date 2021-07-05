@@ -6,23 +6,23 @@ import importlib, copy
 from importlib import util
 
 def help():
-    print('Syntax:')
-    print('mdb2glm.py -i|--ifile <input-file> -o|--ofile <output-file> -t|--type <input-type>')
+    print('Syntax: mdb2glm.py -i|--ifile <input-file> -o|--ofile <output-file> -t|--type <input-type> -p <name>=<value> ...]')
     print('  -i|--ifile     : [REQUIRED] mdb input file name.')
     print('  -o|--ofile     : [REQUIRED] glm output file name.')
     print('  -t|--type      : [REQUIRED] specify input type')
+    print('  -p|--param     : [OPTIONAL] specify a conversion parameter')
     print('Input types')
     print('  cyme           : cyme input');
 
 input_name = None
 output_name = None
 input_type = None
-options = []
+options = {}
 
 try : 
-    opts, args = getopt.getopt(sys.argv[1:],"hi:o:t:",["help","ifile=","ofile=","type="])
+    opts, args = getopt.getopt(sys.argv[1:],"hi:o:t:p:",["help","ifile=","ofile=","type=","param="])
 except getopt.GetoptError:
-    print("ERROR    [mdb2glm.py]: command line options not valid")
+    print("ERROR [mdb2glm]: command line options not valid")
     sys.exit(2)
 
 if not opts : 
@@ -37,14 +37,13 @@ for opt, arg in opts:
     elif opt in ("-o", "--ofile"):
         output_name = arg.strip()
     elif opt in ("-t","--type"):
-        types = arg.strip().split(" ")
-        input_type = types[0];
-        options.extend(types[1:])
-    else:
-        options.append(arg.strip())
+        input_type = arg
+    elif opt in ("-p","--param"):
+        spec = arg.split("=")
+        options[spec[0]] = spec[1]
 
 if input_type is None:
-    print("ERROR    [mdb2glm.py]: conversion type not specified (-t <type> option is missing)")
+    print("ERROR [mdb2glm]: conversion type not specified (-t <type> option is missing)")
     sys.exit(1)
 
 modname = sys.argv[0].replace("mdb2glm.py",f"mdb-{input_type}2glm.py")
@@ -54,14 +53,9 @@ if os.path.exists(modname):
     mod = importlib.import_module(f"mdb-{input_type}2glm")
     argv = copy.deepcopy(sys.argv)
     argv[0] = modname
-    # try:
-    #     mod.convert(input_name,output_name,options)
-    # except Exception as err:
-    #     print(f"ERROR    [{os.path.basename(modname)}]: {err}");
-    #     sys.exit(1)
     mod.convert(input_name,output_name,options)
 
 else:
 
-    print(f"ERROR    [mdb2glm.py]: type '{input_type}' is not valid -- {modname} not found");
+    print(f"ERROR [mdb2glm]: type '{input_type}' is not valid -- {modname} not found");
     sys.exit(2)

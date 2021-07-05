@@ -144,7 +144,6 @@ gldcore/converters/autotest/IEEE-*-cyme/*
 gridlabd.glm
 gldcore/autotest/config.glm
 gldcore/autotest/modify.glm
-validate.zip.gz
 gldcore/converters/autotest/*.png
 validate.tar.gz
 gldcore/converters/autotest/weather_recorder.csv

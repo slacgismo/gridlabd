@@ -37,3 +37,10 @@ Suppress all non-error output
 ~~~
 Enable additional output
 
+## `strict`
+
+~~~
+	-s|--strict
+~~~
+
+Causes warnings to be treated as errors with exit code 1.

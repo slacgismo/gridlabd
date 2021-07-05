@@ -1,0 +1,10 @@
+#ifexist "IEEE-123.glm"
+#define DIR=.
+#else
+#set workdir=IEEE-123-cyme
+#endif
+
+#input "${DIR:-..}/IEEE-123-cyme.mdb" -t cyme
+#include "${DIR:-..}/IEEE-123-cyme-modify.glm"
+
+#output "${DIR:-..}/IEEE-123-cyme.png" -t profile
