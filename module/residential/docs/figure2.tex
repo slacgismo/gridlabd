@@ -1,0 +1,38 @@
+\documentclass[border={5pt 5pt 5pt 5pt}]{standalone}
+\usepackage{amsfonts}
+\usepackage[all]{xy}
+
+\begin{document}
+
+    \xymatrix {
+     &
+     &
+     & *+o[F]{T_O} \ar@{<->}[lld]_{U_{OA}} \ar@{<->}[rrd]^{U_{OU}} \ar@{<->}[lddd]^{U_{OC}} \ar@{<->}[rddd]^{U_{OM}}
+     &
+     &
+     &
+    \\ *++[F]{C_A} \ar@{<->}[r]
+     & *+o[F]{T_A} \ar@{<->}[rdd]^{U_{OC}} \ar@{<->}[rrrdd]_{U_{AM}} \ar@{<->}[rrrr]^{U_{AU}}
+     &
+     &
+     &
+     & *+o[F]{T_U} \ar@{<->}[ldd]^{U_{UC}} \ar@{<->}[llldd]^{U_{UC}}
+     & *++[F]{C_U} \ar@{<->}[l]
+    \\ {Q_A} \ar@{-->}[ru]
+     & {Q_C} \ar@{-->}[rd]
+     &
+     &
+     &
+     &
+     & {Q_U} \ar@{-->}[lu]
+    \\
+     & *++[F]{C_C} \ar@{<->}[r]
+     & *+o[F]{T_C} \ar@{<->}[rr]_{U_{CM}}
+     &
+     & *+o[F]{T_M}
+     & *++[F]{C_M} \ar@{<->}[l]
+     &
+    }
+
+\end{document}
+

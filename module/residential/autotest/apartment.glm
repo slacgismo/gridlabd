@@ -1,0 +1,52 @@
+// apartment.glm
+// Copyright (C) 2020 Regents of the Leland Stanford Junior University
+
+#set verbose=0
+#set debug=0
+#set suppress_repeat_messages=0
+#set profiler=0
+
+#set dumpfile=apartment.json
+
+clock {
+	timezone "US/CA/San Francisco";
+	starttime "2020-01-01 00:00:00 PST";
+	stoptime "2021-01-01 00:00:00 PST";
+} 
+
+module residential
+{
+	default_outdoor_temperature "60.0 degF";
+	default_humidity "70%";
+	default_solar "100 W/m^2";
+}
+
+class weather 
+{
+	double temperature[degF];
+}
+
+object weather
+{
+	name "weather";
+	temperature "60.0 degF";
+}
+// no weather test
+object apartment
+{
+	name "dev-apartment";
+	solver_enable_dump TRUE;
+	solver_enable_debug ${debug};
+	solver_enable_verbose ${verbose};
+	//	building_outdoor_temperature "weather:temperature";
+	Q_AS 100000;
+	Q_AV -10000;
+	Q_AE 10000;
+	Q_US 5000;
+	Q_CS 1000;
+	Q_CV -5000;
+	building_floors 5;
+	building_units 100;
+	core_configuration INDOOR|DOUBLE|CONDITIONED;
+}
+

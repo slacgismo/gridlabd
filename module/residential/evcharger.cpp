@@ -73,6 +73,8 @@
  @{
  **/
 
+#include "residential.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>

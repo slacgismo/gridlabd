@@ -1,0 +1,3 @@
+class,id,name,presync,sync,postsync,init,heartbeat,precommit,commit,finalize
+weather,0,weather,0,0,0,0,0,0,0,0
+apartment,1,,0,0,0,1000,0,0,0,0

@@ -26,6 +26,7 @@ AM_CFLAGS += $(GLD_CFLAGS)  -I$(top_srcdir)/build-dir/gldcore
 
 AM_CXXFLAGS = -Wall -fPIC
 AM_CXXFLAGS += $(PTHREAD_CFLAGS)
+AM_CXXFLAGS += -I/usr/include -I/usr/local/include
 AM_CXXFLAGS += $(GLD_CXXFLAGS) -I$(top_srcdir)/build-dir/gldcore
 
 AM_LDFLAGS =
@@ -33,6 +34,7 @@ AM_LDFLAGS += -no-undefined
 AM_LDFLAGS += -module
 AM_LDFLAGS += -avoid-version
 AM_LDFLAGS += -export-dynamic
+AM_LDFLAGS += -L/usr/lib -L/usr/local/lib
 AM_LDFLAGS += $(GLD_LDFLAGS)
 
 # makefile fragments populate these variables
@@ -292,6 +294,7 @@ distclean-local: python-clean
 	@rm -rf $(top_srcdir)/build
 	@rm -rf $(top_srcdir)/documents/html
 	@rm -f $(top_srcdir)/validate.txt
+	@rm -rf $(top_srcdir)/third_party/armadillo-7.800.1
 
 libtool: $(LIBTOOL_DEPS)
 	$(SHELL) ./config.status libtool > /dev/null
@@ -316,6 +319,18 @@ python-requirements: $(python_requirements)
 
 reconfigure: distclean
 	autoreconf -isf && ./configure --quiet
+
+libraries: armadillo
+	
+armadillo: third_party/armadillo-7.800.1/Makefile
+
+third_party/armadillo-7.800.1/Makefile: third_party/armadillo-7.800.1/configure
+	@(cd $(top_srcdir)/third_party/armadillo-7.800.1 && ./configure && make install )
+
+third_party/armadillo-7.800.1/configure: third_party/armadillo-7.800.1
+
+third_party/armadillo-7.800.1: third_party/armadillo-7.800.1.tar.gz
+	@(cd $(top_srcdir)/third_party && tar xf armadillo-7.800.1.tar.gz) 
 
 reconfigure-debug: distclean
 	autoreconf -isf && ./configure --quiet 'CXXFLAGS=-O0 -g $(CXXFLAGS)'

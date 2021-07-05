@@ -1495,7 +1495,7 @@ inline DEPRECATED char *gl_strftime(TIMESTAMP ts, char *buffer, int size)
 }
 /** Calculate the next power of 2 greater than a number
  **/
-inline size_t nextpow2(register size_t x)
+inline size_t nextpow2(size_t x)
 {
 	if (x<0) return 0;
 	x--;
@@ -1564,17 +1564,27 @@ inline size_t nextpow2(register size_t x)
 ///
 /// Catchall for sync
 ///
-#define SYNC_CATCHALL(C) catch (const char *msg) { gl_error("sync_" #C "(obj=%d;%s): %s", obj->id, obj->name?obj->name:"unnamed", msg); return TS_INVALID; } catch (...) { gl_error("sync_" #C "(obj=%d;%s): unhandled exception", obj->id, obj->name?obj->name:"unnamed"); return TS_INVALID; }
+#define SYNC_CATCHALL(C) catch (const char *msg) { gl_error("sync_" #C "(obj=%d;%s): %s", obj->id, obj->name?obj->name:"unnamed", msg); return TS_INVALID; } \
+	catch (std::exception &msg) { gl_error("sync_" #C "(obj=%d;%s): %s", obj->id, obj->name?obj->name:"unnamed", msg.what()); return TS_INVALID; } \
+	catch (...) { gl_error("sync_" #C "(obj=%d;%s): unhandled exception", obj->id, obj->name?obj->name:"unnamed"); return TS_INVALID; }
 ///
 /// Catchall for init
 ///
-#define INIT_CATCHALL(C) catch (const char *msg) { gl_error("init_" #C "(obj=%d;%s): %s", obj->id, obj->name?obj->name:"unnamed", msg); return 0; } catch (...) { gl_error("init_" #C "(obj=%d;%s): unhandled exception", obj->id, obj->name?obj->name:"unnamed"); return 0; }
+#define INIT_CATCHALL(C) catch (const char *msg) { gl_error("init_" #C "(obj=%d;%s): %s", obj->id, obj->name?obj->name:"unnamed", msg); return 0; } \
+	catch (std::exception &msg) { gl_error("init_" #C "(obj=%d;%s): %s", obj->id, obj->name?obj->name:"unnamed", msg.what()); return TS_INVALID; } \
+	catch (...) { gl_error("init_" #C "(obj=%d;%s): unhandled exception", obj->id, obj->name?obj->name:"unnamed"); return 0; }
 ///
 /// Catchall for create
 ///
-#define CREATE_CATCHALL(C) catch (const char *msg) { gl_error("create_" #C ": %s", msg); return 0; } catch (...) { gl_error("create_" #C ": unhandled exception"); return 0; }
-#define I_CATCHALL(T,C) catch (const char *msg) { gl_error(#T "_" #C ": %s", msg); return 0; } catch (...) { gl_error(#T "_" #C ": unhandled exception"); return 0; }
-#define T_CATCHALL(T,C) catch (const char *msg) { gl_error(#T "_" #C "(obj=%d;%s): %s", obj->id, obj->name?obj->name:"unnamed", msg); return TS_INVALID; } catch (...) { gl_error(#T "_" #C "(obj=%d;%s): unhandled exception", obj->id, obj->name?obj->name:"unnamed"); return TS_INVALID; }
+#define CREATE_CATCHALL(C) catch (const char *msg) { gl_error("create_" #C ": %s", msg); return 0; } \
+	catch (std::exception &msg) { gl_error("create_" #C ": %s", msg.what()); return TS_INVALID; } \
+	catch (...) { gl_error("create_" #C ": unhandled exception"); return 0; }
+#define I_CATCHALL(T,C) catch (const char *msg) { gl_error(#T "_" #C ": %s", msg); return 0; } \
+	catch (std::exception &msg) { gl_error(#T "_" #C ": %s", msg.what()); return TS_INVALID; } \
+	catch (...) { gl_error(#T "_" #C ": unhandled exception"); return 0; }
+#define T_CATCHALL(T,C) catch (const char *msg) { gl_error(#T "_" #C "(obj=%d;%s): %s", obj->id, obj->name?obj->name:"unnamed", msg); return TS_INVALID; } \
+	catch (std::exception &msg) { gl_error(#T "_" #C "(obj=%d;%s): %s", obj->id, obj->name?obj->name:"unnamed", msg.what()); return TS_INVALID; } \
+	catch (...) { gl_error(#T "_" #C "(obj=%d;%s): unhandled exception", obj->id, obj->name?obj->name:"unnamed"); return TS_INVALID; }
 /**@}*/
 
 /****************************
@@ -2397,7 +2407,7 @@ public:
 	
 	// Constructor: gld_unit
 	// Construct a container for a named or derived unit
-	inline gld_unit(char *name) { UNIT *unit=callback->unit_find(name); if (unit) memcpy(&core,unit,sizeof(UNIT)); else memset(&core,0,sizeof(UNIT)); };
+	inline gld_unit(const char *name) { UNIT *unit=callback->unit_find(name); if (unit) memcpy(&core,unit,sizeof(UNIT)); else memset(&core,0,sizeof(UNIT)); };
 	
 	// Operator: UNIT*
 	// Cast to a UNIT structure
@@ -2453,13 +2463,13 @@ public:
 
 	// Method: set_unit
 	// Change the unit
-	inline bool set_unit(char *name){ UNIT *unit=callback->unit_find(name); if (unit) {memcpy(&core,unit,sizeof(UNIT));return true;} else {memset(&core,0,sizeof(UNIT));return false;} };
+	inline bool set_unit(const char *name){ UNIT *unit=callback->unit_find(name); if (unit) {memcpy(&core,unit,sizeof(UNIT));return true;} else {memset(&core,0,sizeof(UNIT));return false;} };
 
 public: 
 
 	// Method: convert
 	// Convert a value to another named or derived unit
-	inline bool convert(char *name, double &value) { UNIT *unit=callback->unit_find(name); return unit&&(callback->unit_convert_ex(&core,unit,&value))?true:false; }
+	inline bool convert(const char *name, double &value) { UNIT *unit=callback->unit_find(name); return unit&&(callback->unit_convert_ex(&core,unit,&value))?true:false; }
 	
 	// Method: convert
 	// Convert a value to another UNIT
@@ -3111,6 +3121,9 @@ public:
 	// Method: get_property
 	inline PROPERTY *get_property(void) { return pstruct.prop; };
 
+	// Method: get_offset
+	inline size_t get_offset(gld_object *self) { return (char*)this - (char*)self; };
+	
 	// Method: get_class
 	inline gld_class* get_class(void) { return (gld_class*)pstruct.prop->oclass; };
 
@@ -3237,7 +3250,7 @@ public:
 	inline bool get_bool(void) { return *(bool*)get_addr(); };
 
 	// Method: get_double(void)
-	inline double get_double(void) { errno=0; switch(pstruct.prop->ptype) { case PT_double: case PT_random: case PT_enduse: case PT_loadshape: return has_part() ? get_part() : *(double*)get_addr(); default: errno=EINVAL; return NaN;} };
+	inline double get_double(void) { errno=0; switch(pstruct.prop->ptype) { case PT_double: return *(double*)get_addr(); case PT_random: case PT_enduse: case PT_loadshape: return has_part() ? get_part() : *(double*)get_addr(); default: errno=EINVAL; return NaN;} };
 
 	// Method: get_double(UNIT*to)
 	inline double get_double(UNIT*to) { double rv = get_double(); return get_unit()->convert(to,rv) ? rv : QNAN; };
@@ -3246,7 +3259,7 @@ public:
 	inline double get_double(gld_unit&to) { double rv = get_double(); return get_unit()->convert(to,rv) ? rv : QNAN; };
 
 	// Method: get_double(char*to)
-	inline double get_double(char*to) { double rv = get_double(); return get_unit()->convert(to,rv) ? rv : QNAN; };
+	inline double get_double(const char*to) { double rv = get_double(); return get_unit()->convert(to,rv) ? rv : QNAN; };
 
 	// Method: get_complex
 	inline complex get_complex(void) { errno=0; if ( pstruct.prop->ptype==PT_complex ) return *(complex*)get_addr(); else return complex(QNAN,QNAN); };

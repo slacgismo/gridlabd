@@ -1,4 +1,4 @@
-/** random.cpp
+/** randomvar.cpp
 	Copyright (C) 2008 Battelle Memorial Institute
 	@file random.c
 	@addtogroup random Random number generators

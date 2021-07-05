@@ -176,7 +176,10 @@ typedef uint64 set;      /* sets (each of up to 64 values may be defined) */
 typedef uint32 enumeration; /* enumerations (any one of a list of values) */
 
 // Typedef: object
-typedef struct s_object_list* object; /* GridLAB objects */
+typedef struct s_object_list* object; /* object references */
+
+// Typedef: property
+typedef class gld_property* property; /* object property references */
 
 // Typedef: triplet
 typedef double triplet[3];
@@ -1079,6 +1082,7 @@ enum e_propertytype {_PT_FIRST=-1,
 	PT_random,
 	PT_method,
 	PT_string,
+	PT_property,
 	PT_python,
 	/* add new property types here - don't forget to add them also to rt/gridlabd.h and property.c */
 #ifdef USE_TRIPLETS
@@ -1454,6 +1458,22 @@ struct s_property_specs
  */
 typedef struct s_property_specs PROPERTYSPEC;
 
+/*	Structure: s_object_property
+	object - object reference
+	property - property reference
+ */
+struct s_object_property
+{
+	PROPERTY *prop;
+	PROPERTYNAME part;
+	struct s_object_list *obj;
+};
+
+/*	Typedef: OBJECTPROPERTY
+		See <s_object_property>
+ */
+typedef struct s_object_property OBJECTPROPERTY;
+
 /* 	Function: double_array_create
 
 	Returns: 
@@ -1686,7 +1706,41 @@ int convert_to_string(const char *s, void *data, PROPERTY *p);
  */
 int convert_from_string(char *buffer, int len, void *data, PROPERTY *p);
 
-// EOF
+/*	Function: propertyref_create
+
+	Returns:
+	>0 - success
+	=0 - no data
+	<0 - failure
+ */
+int propertyref_create(void *ptr);
+
+/*	Function: convert_to_propertyref
+
+	Returns:
+	>0 - success
+	=0 - no data
+	<0 - failure
+ */
+int convert_to_propertyref(const char *s, void *data, PROPERTY *p);
+
+/*	Function: convert_from_propertyref
+
+	Returns:
+	>0 - success
+	=0 - no data
+	<0 - failure
+ */
+int convert_from_propertyref(char *buffer, int len, void *data, PROPERTY *p);
+
+/*	Function: initial_from_propertyref
+
+	Returns:
+	>0 - success
+	=0 - no data
+	<0 - failure
+ */
+int initial_from_propertyref(char *buffer, int len, void *data, PROPERTY *p);
 
 #ifdef __cplusplus
 }

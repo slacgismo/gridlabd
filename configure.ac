@@ -490,6 +490,11 @@ AS_IF([test -n "$DX_DOXYGEN"],
       [HAVE_DOXYGEN=no])
 AM_CONDITIONAL([HAVE_DOXYGEN], [test ! "x$HAVE_DOXYGEN" = "xno"])
 
+# Check for armadillo
+AS_IF([test -f /usr/include/armadillo -o -f /usr/local/include/armadillo ],
+    [HAVE_ARMA="yes"],
+    [HAVE_ARMA="no (required)"])
+
 # Check for mysql
 AS_IF([test -f /usr/local/include/mysql/mysql.h -a /usr/local/lib/libmysqlclient.a ],
     [MYSQL="/usr/local"],
@@ -587,6 +592,7 @@ AC_MSG_RESULT([
   Dependencies:
 
     ncurses: .................... $HAVE_CURSES
+    armadillo: .................. $HAVE_ARMA
     python: ..................... $HAVE_PYTHON
     mysql-connector-c: .......... $HAVE_MYSQL
     Doxygen: .................... $HAVE_DOXYGEN

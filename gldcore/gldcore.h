@@ -122,6 +122,7 @@ typedef enum e_status {FAILED=FALSE, SUCCESS=TRUE} STATUS;
 #include "platform.h"
 #include "property.h"
 #include "python_embed.h"
+#include "random.h"
 #include "python_property.h"
 #include "random.h"
 #include "realtime.h"

@@ -457,7 +457,8 @@ typedef enum {_PT_FIRST=-1,
 	PT_enduse,		/**< Enduse load data */
 	PT_random,		/**< Randomized number */
 	PT_method,		/**< Method interface */
-	PT_string,
+	PT_string,		/**< General string */
+	PT_property,	/**< General property reference */
 	PT_python,
 #ifdef USE_TRIPLETS
 	PT_triple, /**< triplet of doubles (not supported) */

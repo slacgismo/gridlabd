@@ -8042,8 +8042,13 @@ int GldLoader::process_macro(char *line, int size, char *_filename, int linenum)
 	int rc = my_instance->subcommand("%s/" PACKAGE "-%s",global_execdir,strchr(line,'#')+1);
 	if ( rc != 127 )
 	{
+		if ( rc != 0 )
+		{
+			syntax_error(filename,linenum,"macro subcommand failed with exit code %d",rc);
+			return FALSE;
+		}
 		strcpy(line,"\n");
-		return rc==0;
+		return TRUE;
 	}
 	else
 	{

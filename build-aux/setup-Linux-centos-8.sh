@@ -1,5 +1,11 @@
 #!/bin/bash
 
+## US English ##
+export LANG=en_US.UTF-8
+export LANGUAGE=en_US.UTF-8
+export LC_COLLATE=C
+export LC_CTYPE=en_US.UTF-8
+
 # Install needed system tools
 yum -q update -y ; 
 yum -q clean all
@@ -10,6 +16,12 @@ yum -q install epel-release -y
 yum -q install curl-devel -y
 yum -q install which -y
 yum -q install svn -y
+
+# Install armadillo
+yum install -q epel-release -y 
+yum install -q 'dnf-command(config-manager)' -y
+yum config-manager --set-enabled PowerTools
+yum install -q armadillo-devel -y
 
 # python3 support needed as of 4.2
 if [ ! -x /usr/local/bin/python3 -o $(/usr/local/bin/python3 --version) != "Python 3.9.0" ]; then

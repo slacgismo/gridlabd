@@ -640,7 +640,7 @@ int unit_convert(const char *from, const char *to, double *pValue)
 int unit_convert_ex(UNIT *pFrom, UNIT *pTo, double *pValue)
 {
 	if(pFrom == NULL || pTo == NULL || pValue == NULL){
-		output_error("could not run unit_convert_ex due to null arguement");
+		output_error("could not run unit_convert_ex due to null %s",(pFrom==NULL?"from unit":(pTo==NULL?"to unit":"value")));
 		/*	TROUBLESHOOT
 			An error occured earlier in processing that caused a null pointer to be used as an arguement.  Review
 			other error messages for details, but either a property was not found, or a unit definition was not
@@ -664,7 +664,7 @@ int unit_convert_ex(UNIT *pFrom, UNIT *pTo, double *pValue)
 int unit_convert_complex(UNIT *pFrom, UNIT *pTo, complex *pValue)
 {
 	if(pFrom == NULL || pTo == NULL || pValue == NULL){
-		output_error("could not run unit_convert_complex due to null arguement");
+		output_error("could not run unit_convert_complex due to null %s",(pFrom==NULL?"from unit":(pTo==NULL?"to unit":"value")));
 		/*	TROUBLESHOOT
 			An error occured earlier in processing that caused a null pointer to be used as an arguement.  Review
 			other error messages for details, but either a property was not found, or a unit definition was not

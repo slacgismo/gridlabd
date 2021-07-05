@@ -413,6 +413,7 @@ STATUS GldGlobals::init(void)
 	global_version_minor = version_minor();
 	global_version_patch = version_patch();
 	global_version_build = version_build();
+	snprintf(global_version,sizeof(global_version),"%d.%d.%d-%d-%s",global_version_major,global_version_minor,global_version_patch,global_version_build,global_version_branch);
 	strncpy(global_version_branch,version_branch(),sizeof(global_version_branch)-1);
 	strcpy(global_datadir,global_execdir);
 	char *bin = strstr(global_datadir,"/bin");

@@ -14,11 +14,6 @@
 
 #define LF_SKIPSAFE 0x01
 
-typedef struct {
-	OBJECT *obj;
-	PROPERTY *prop;
-} OBJECTPROPERTY;
-
 typedef struct s_linklist {
 	const char *name; // spec for link
 	void *data; // local data

@@ -33,11 +33,11 @@ function config()
 		echo "CACHEDIR=\"$CACHEDIR\""
 		echo "DATADIR=\"$DATADIR\""
 	elif [ "$1" == "reset" ]; then
-		rm -f $CONFIGFILE || (echo "ERROR: unable to reset $CONFIGFILE" > /dev/stderr; exit 1)
+		rm -f "$CONFIGFILE" || (echo "ERROR: unable to reset $CONFIGFILE" > /dev/stderr; exit 1)
 	elif [ "$1" == "set" -a $# == 3 ]; then
-		echo "$2=\"$3\"" >> $CONFIGFILE
+		echo "$2=\"$3\"" >> "$CONFIGFILE"
 	elif [ "$1" == "get" -a $# == 2 ]; then
-		if [ ! -r $CONFIGFILE ]; then
+		if [ ! -r "$CONFIGFILE" ]; then
 			value=$(config show | grep $2)
 		else
 			value=$(grep ^$2 $CONFIGFILE | tail -n 1)
@@ -45,7 +45,7 @@ function config()
 		if [ -z "$value" ]; then
 			value=$(config show | grep $2)
 		fi
-		echo $value | cut -f2 -d= | cut -f2 -d\"
+		echo "$value" | cut -f2 -d= | cut -f2 -d\"
 	else
 		echo "'$1' is an invalid config option"
 		exit 1
@@ -61,19 +61,19 @@ INDEX=$CACHEDIR/$COMMIT_ID
 
 function fetch_index()
 {
-	if [ ! -d $DATADIR ]; then
-		mkdir -p $DATADIR || (echo "ERROR: unable to create $DATADIR" > /dev/stderr; exit 1)
+	if [ ! -d "$DATADIR" ]; then
+		mkdir -p $"DATADIR" || (echo "ERROR: unable to create $DATADIR" > /dev/stderr; exit 1)
 	fi
-	if [ ! -d $CACHEDIR ]; then
-		mkdir -p $CACHEDIR || ( echo "ERROR: unable to create $CACHEDIR" > /dev/stderr; exit 1)
+	if [ ! -d "$CACHEDIR" ]; then
+		mkdir -p "$CACHEDIR" || ( echo "ERROR: unable to create $CACHEDIR" > /dev/stderr; exit 1)
 	fi
-	if [ ! -f $INDEX -o -z $INDEX ]; then
+	if [ ! -f "$INDEX" -o -z "$INDEX" ]; then
 		echo -n "Downloading ${GITBRANCH} index of $COUNTRY weather archive from ${GITPROJ}... "
 #		svn $SVNLSOPTIONS ls $GITPROJ/branches/$GITBRANCH/$COUNTRY | grep '.tmy3$' > $INDEX || rm -f $INDEX
-		curl -s $GITHUBUSERCONTENT/$GITUSER/$GITREPO/$GITBRANCH/$COUNTRY/.index >$INDEX
-		echo $(wc -l $INDEX | sed -e 's/ \+/ /g;s/^ //' | cut -f1 -d' ') "weather files found"
+		curl -s "$GITHUBUSERCONTENT/$GITUSER/$GITREPO/$GITBRANCH/$COUNTRY/.index" >"$INDEX"
+		echo $(wc -l "$INDEX" | sed -e 's/ \+/ /g;s/^ //' | cut -f1 -d' ') "weather files found"
 	fi
-	if [ ! -f $INDEX ]; then
+	if [ ! -f "$INDEX" ]; then
 		echo "$0: ERROR: unable to fetch index" > /dev/stderr
 		exit 1
 	fi
@@ -105,8 +105,8 @@ function help()
 
 function clean()
 {
-	rm -rf $CACHEDIR 
-	if [ -d $CACHEDIR ]; then
+	rm -rf "$CACHEDIR" 
+	if [ -d "$CACHEDIR" ]; then
 		echo "$0: ERROR: unable to delete $CACHEDIR" > /dev/stderr
 		exit 1
 	fi
@@ -117,29 +117,32 @@ function index()
 {
 	fetch_index
 	if [ $# == 0 ]; then
-		cat $INDEX
+		cat "$INDEX"
 	else
-		grep "$1" $INDEX
+		grep "$1" "$INDEX"
 	fi
 }
 
 function list()
 {
 	fetch_index
-	for f in $(index $1); do
-		if [ -f $DATADIR/$f ]; then
-			echo $f
+	for f in $(index "$1"); do
+		if [ -f "$DATADIR/$f" ]; then
+			echo "$f"
 		fi
 	done
 }
 
 function get()
 {
-	fetch_index
-	for f in $(index $1); do
-		if [ ! -f $DATADIR/$f ]; then
+	if [ -z $(index "$1") ]; then
+		echo "ERROR: $1 not found"
+		exit 1
+	fi
+	for f in $(index "$1"); do
+		if [ ! -f "$DATADIR/$f" ]; then
 			echo -n "Downloading $f... "
-			(curl -s $GITFILE/$COUNTRY/$f > /tmp/$$ && mv /tmp/$$ $DATADIR/$f && echo "done") || (echo "ERROR: unable to download $f" > /dev/stderr; rm -f /tmp/$$; exit 1)
+			(curl -s "$GITFILE/$COUNTRY/$f" > "/tmp/$$" && mv "/tmp/$$" "$DATADIR/$f" && echo "done") || (echo "ERROR: unable to download $f" > /dev/stderr; rm -f /tmp/$$; exit 1)
 		# else
 		# 	echo -n "Refreshing $f... "
 		# 	(curl -s $GITFILE/$COUNTRY/$f -z $DATADIR/$f > /tmp/$$ && mv /tmp/$$ $DATADIR/$f && echo "done") || (echo "ERROR: unable to refresh $f" > /dev/stderr; rm -f /tmp/$$; exit 1)
@@ -151,7 +154,7 @@ function info()
 {
 	fetch_index
 	first="yes"
-	for f in $(index $1); do
+	for f in $(index "$1"); do
 		if [ -s $DATADIR/$f ]; then
 			if [ "$first" == "yes" ]; then
 				echo "Filepath,Country,StationId,StationName,RegionName,TzOffset,Latitude,Longitude,Elevation"
@@ -166,16 +169,16 @@ function info()
 function delete()
 {
 	fetch_index
-	for f in $(index $1); do
-		if [ -f $DATADIR/$f ]; then
-			rm -f $DATADIR/$f || ( echo "ERROR: unable to delete %f" > /dev/stderr; exit 1)
+	for f in $(index "$1"); do
+		if [ -f "$DATADIR/$f" ]; then
+			rm -f "$DATADIR/$f" || ( echo "ERROR: unable to delete %f" > /dev/stderr; exit 1)
 		fi
 	done
 
 }
 
 if [ $# == 0 -o "$1" == "help" ]; then
-	help $2
+	help "$2"
 	exit 0
 elif [ "$(type -t $1)" = "function" ]; then
 	$*

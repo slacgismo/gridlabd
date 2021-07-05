@@ -962,7 +962,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\random.h"
+				RelativePath=".\randomvar.h"
 				>
 			</File>
 			<File

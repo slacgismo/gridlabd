@@ -6,9 +6,10 @@ module_residential_residential_la_CPPFLAGS += $(AM_CPPFLAGS)
 module_residential_residential_la_LDFLAGS =
 module_residential_residential_la_LDFLAGS += $(AM_LDFLAGS)
 
-module_residential_residential_la_LIBADD = -ldl
+module_residential_residential_la_LIBADD = -ldl -larmadillo
 
 module_residential_residential_la_SOURCES = module/residential/init.cpp module/residential/main.cpp
+module_residential_residential_la_SOURCES += module/residential/apartment.cpp module/residential/apartment.h
 module_residential_residential_la_SOURCES += module/residential/appliance.cpp module/residential/appliance.h
 module_residential_residential_la_SOURCES += module/residential/clotheswasher.cpp module/residential/clotheswasher.h
 module_residential_residential_la_SOURCES += module/residential/dishwasher.cpp module/residential/dishwasher.h

@@ -1,0 +1,126 @@
+// apartment.glm
+// Copyright (C) 2020 Regents of the Leland Stanford Junior University
+
+#set debug=0
+#set suppress_repeat_messages=FALSE
+
+module powerflow;
+
+clock {
+	timezone "US/CA/San Francisco";
+	starttime "2020-01-01 00:00:00 PST";
+	stoptime "2021-01-01 00:00:00 PST";
+} 
+
+module residential
+{
+	default_outdoor_temperature "59.0 degF";
+	default_humidity "70%";
+	default_solar "100 W/m^2";
+}
+
+// no weather test
+object meter:..5
+{
+	name `{class}_{id}`;
+	phases ABC;
+	nominal_voltage 480 V;
+	measured_energy_delta_timestep 3600;
+	object apartment
+	{
+		building_floors 5;
+		building_units 100;
+		core_configuration INDOOR|DOUBLE|CONDITIONED;
+	};
+}
+
+// global weather test
+global double temperature[degF] "59.0 degF";
+global double humidity[%] "70%";
+global double solar_global[W/m^2] "100 W/m^2";
+
+object meter:..5
+{
+	name `{class}_{id}`;
+	phases ABC;
+	nominal_voltage 480 V;
+	measured_energy_delta_timestep 3600;
+	object apartment
+	{
+		building_outdoor_temperature "::temperature";
+		building_outdoor_humidity "::humidity";
+		building_solar_gain "::solar_global";
+		building_floors 5;
+		building_units 100;
+		core_configuration INDOOR|DOUBLE|CONDITIONED;
+	};
+}
+
+// custom weather test
+class weather
+{
+	double temperature[degF];
+	double humidity[%];
+	double solar_global[W/m^2];
+}
+
+object weather
+{
+	name "weather";
+	temperature "59.0 degF";
+	humidity "70%";
+	solar_global "100 W/m^2";
+}
+
+object meter:..5
+{
+	name `{class}_{id}`;
+	phases ABC;
+	nominal_voltage 480 V;
+	measured_energy_delta_timestep 3600;
+	object apartment
+	{
+		building_outdoor_temperature "weather:temperature";
+		building_outdoor_humidity "weather:humidity";
+		building_solar_gain "weather:solar_global";
+		building_floors 5;
+		building_units 100;
+		core_configuration INDOOR|DOUBLE|CONDITIONED;
+	};
+}
+
+// residential module weather test
+
+
+// climate module weather test
+#weather get "CA-San_Francisco_Intl_Ap.tmy3"
+#input "CA-San_Francisco_Intl_Ap.tmy3" -p "name=sfo";
+
+object meter:..5
+{
+	name `{class}_{id}`;
+	phases ABC;
+	nominal_voltage 480 V;
+	measured_energy_delta_timestep 3600;
+	object apartment
+	{
+		weather "sfo";
+		building_floors 5;
+		building_units 100;
+		core_configuration INDOOR|DOUBLE|CONDITIONED;
+	};
+}
+
+module tape
+{
+	csv_header_type NAME;
+}
+object multi_recorder 
+{
+	file ${modelname/.glm/.csv};
+#for METER in ${FIND class=meter}
+	property "${METER}:measured_real_energy_delta";
+#done
+	interval -1;
+}
+

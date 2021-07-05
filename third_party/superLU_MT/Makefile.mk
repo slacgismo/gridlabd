@@ -9,7 +9,7 @@ third_party_superLU_MT_libsuperlu_la_LDFLAGS =
 third_party_superLU_MT_libsuperlu_la_LDFLAGS = $(AM_LDFLAGS)
 
 third_party_superLU_MT_libsuperlu_la_LIBADD =
-third_party_superLU_MT_libsuperlu_la_LIBADD += third_party/CBLAS/libblas.la
+third_party_superLU_MT_libsuperlu_la_LIBADD += -Lthird_party/CBLAS -lcblas
 third_party_superLU_MT_libsuperlu_la_LIBADD += $(PTHREAD_CFLAGS)
 third_party_superLU_MT_libsuperlu_la_LIBADD += $(PTHREAD_LIBS)
 third_party_superLU_MT_libsuperlu_la_LIBADD += -lm

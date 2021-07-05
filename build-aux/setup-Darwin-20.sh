@@ -1,4 +1,3 @@
-#!/bin/bash
 export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
 
 brew update || ruby -e "$(curl -fsSL https://raw.githubusercontent.com/HomeBrew/install/master/install)"
@@ -25,3 +24,12 @@ brew services start influxdb
 
 # subversion cli
 brew install svn
+
+# armadillo9 library
+cd /tmp
+curl -sL "http://sourceforge.net/projects/arma/files/armadillo-9.900.5.tar.xz" >armadillo-9.900.5.tar.xz
+gunzip armadillo-9.900.5.tar.xz
+tar xf armadillo-9.900.5.tar
+cd armadillo-9.900.5
+cmake .
+make install
