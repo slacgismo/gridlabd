@@ -163,21 +163,12 @@ def get_air_properties(temp):
     """
     # calculate the constant parameters
     # reference: http://home.eng.iastate.edu/~jdm/wind/TransmissionLineLoadingDesignCriteriaAndHTS.pdf
-    temp_x = np.arange(0.0, 110.0, 10) # unit: DegC
-    specific_mass = [1.29, 1.25, 1.20, 1.17, 1.13, 1.09, 1.06, 1.03, 1.0, 0.97, 0.95] # unit: kg/m3
-    thermal_conductivity = [0.0243, 0.025, 0.0257, 0.0265, 0.0272, 0.028, 0.0287,0.0294, 0.0301, 0.0309, 0.0316] # unit: W/(m*DegC)
-    dynamic_viscosity = [0.175e-4, 0.18e-4, 0.184e-4, 0.189e-4, 0.194e-4, 0.199e-4, 0.203e-4, 0.208e-4, 0.213e-4, 0.217e-4, 0.222e-4] # unit: N*s/m2
 
-    f_specific_mass = interp1d(temp_x, specific_mass, fill_value = "extrapolate")
-    specific_mass_temp = f_specific_mass(temp)
+    specific_mass = -0.00342727*temp + 1.275 
+    thermal_conductivity = 7.32727273e-05*temp + 0.02428182
+    dynamic_viscosity = 4.7e-08*temp + 1.75045455e-05
 
-    f_thermal_conductivity = interp1d(temp_x, thermal_conductivity, fill_value = "extrapolate")
-    thermal_conductivity_temp = f_thermal_conductivity(temp)
-
-    f_dynamic_viscosity = interp1d(temp_x, dynamic_viscosity, fill_value = "extrapolate")
-    dynamic_viscosity_temp = f_dynamic_viscosity(temp)
-
-    return specific_mass_temp, thermal_conductivity_temp, dynamic_viscosity_temp
+    return specific_mass, thermal_conductivity, dynamic_viscosity
 
 hold_values = {}
 def hold0(name,value=None):
@@ -221,8 +212,8 @@ def get_line_tension_coefficient(d_hori):
     """
     # reference: IEC 60826:2017
     # fit of data is used
-    # 0.2106718346 + 0.0003126614987*d_hori
-    return 0.50723325 - 0.29656325/(0.05*d_hori+1)
+    # 0.50723325 - 0.29656325/(0.05*d_hori+1)
+    return 0.2106718346 + 0.0003126614987*d_hori
 
 def get_distance(pos1, pos2):
     """Compute haversine distance between two locations
@@ -449,7 +440,7 @@ def get_sag_value(d_hori,line,cable,p0,p1,z0,z1,
     k_angle = 1.194 - cos(phi) + 0.194*cos(2*phi) + 0.368*sin(2*phi)
     air_mass, k_f, air_viscosity = get_air_properties(air_temperature)
     Nre = wind_speed * (diameter + 2*ice_thickness) * air_mass / air_viscosity
-    if wind_speed > 1.1:
+    if wind_speed < 0.81:
         Q_C_coeff_first = k_angle*(1.01+1.35*Nre**0.52)*k_f
         Q_C_constant = -k_angle*(1.01+1.35*Nre**0.52)*k_f*(air_temperature+273.0)
     else:
