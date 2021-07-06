@@ -1,0 +1,53 @@
+
+module revenue
+{
+	
+//	program_credit_months [4,10]; semi-annual Check
+//	summer_season_months [6,7,8,9,10]; 
+//	winter_season_months [1,2,3,4,5,11,12];
+	billing_module "test_billing";
+	billing_library "${TESTDIR:-.}";
+};
+
+object tariff 
+{
+	name "DR Rates";
+	rate_design "Tiered Energy Charges";
+	minimum_daily_charge 0.338 $/day;
+	summer_energy_charge_base 0.27539 $/kWh;
+	summer_energy_charge_131_400 0.34675 $/kWh;
+	summer_energy_charge_400 0.43344 $/kWh;
+ 	winter_energy_charge_base 0.27539 $/kWh;
+	winter_energy_charge_131_400 0.34675 $/kWh;
+	winter_energy_charge_400 0.43344 $/kWh;
+	
+}
+
+object tariff 
+{
+	name "CARE Rates";
+	rate_design "Tiered Energy Charges";
+	minimum_daily_charge 0.169 $/day;
+	summer_energy_charge_base 0.17853 $/kWh;
+	summer_energy_charge_131_400 0.22719 $/kWh;
+	summer_energy_charge_400 0.28631 $/kWh;
+ 	winter_energy_charge_base 0.17853 $/kWh;
+	winter_energy_charge_131_400 0.22719 $/kWh;
+	winter_energy_charge_400 0.28631 $/kWh;
+	
+}
+
+object tariff 
+{
+	name "TOU-Residential Rates";
+	rate_design "Tiered Energy Charges";
+	minimum_daily_charge 0.338 $/day;
+	summer_on_peak 0.42419 $/kWh;
+	summer_off_peak 0.37526 $/kWh;
+	summer_super_off_peak 0.32681 $/kWh;
+	winter_on_peak 0.33071 $/kWh;
+	winter_off_peak0.32310 $/kWh;
+	winter_super_off_peak 0.31466 $/kWh;
+}
+  
+	

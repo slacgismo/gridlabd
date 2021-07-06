@@ -1,0 +1,29 @@
+//
+module revenue
+{
+	// lowincome_discount  %;
+	// program_credit 37 $;
+	// program_credit_months [];
+	// summer_season_months [6,7,8,9];
+	// winter_season_months [1,2,3,4,5,10,11,12];
+	billing_module "test_billing";
+	billing_library "${TESTDIR:-.}";
+};
+
+class sce_residential_tariff{
+	parent tariff;
+	double minimum_daily_charge[$/day];
+	double energy_charge_base[$/kWh];
+	double energy_charge_100[$/kWh];
+	double energy_charge_400[$/kWh];
+	char256 billing_function;
+
+object sce_residential_tariff {
+	name "D";
+	rate_design "Tiered Energy Charges";
+	minimum_daily_charge 0.346 $/day;
+	energy_charge_base 0.11940 $/kWh;
+	energy_charge_100 0.18082 $/kWh;
+	energy_charge_400 0.25005 $/kWh;
+
+}

@@ -1,0 +1,42 @@
+// source: https://library.sce.com/content/dam/sce-doclib/public/regulatory/tariff/electric/schedules/residential-rates/ELECTRIC_SCHEDULES_D.pdf
+// Effective October 1, 2020
+
+module revenue
+{
+	// lowincome_discount %;
+	// program_credit 37 $;
+	// program_credit_months [4,10];
+	// summer_season_months [6,7,8,9];
+	// winter_season_months [1,2,3,4,5,10,11,12];
+	billing_module "test_billing";
+	billing_library "${TESTDIR:-.}";
+};
+
+class sce_residential_tariff{
+	parent tariff;
+	double minimum_daily_charge[$/day];
+	double energy_charge_base_summer[$/kWh];
+	double energy_charge_base_winter[$/kWh];
+	double energy_charge_100_summer[$/kWh];
+	double energy_charge_100_winter[$/kWh];
+	double energy_charge_400_summer[$/kWh];
+	double energy_charge_400_winter[$/kWh];
+	double basic_charge [$/kWh];
+	char256 billing_function;
+}
+
+// sheet 3 
+
+object sce_residential_tariff {
+	name "Schedule_D";
+	rate_design "Tiered Energy Charges";
+	minimum_daily_charge 0.346 $/day;
+	energy_charge_base_summer 0.11940 $/kWh;
+	energy_charge_base_winter 0.11940 $/kWh;
+	energy_charge_100_summer 0.18082 $/kWh;
+	energy_charge_100_winter 0.18082 $/kWh;
+	energy_charge_400_summer 0.25005 $/kWh;
+	energy_charge_400_winter 0.25005 $/kWh;
+	basic_charge 0.031 $/kWh;
+}
+

@@ -1,0 +1,45 @@
+module revenue
+{
+	
+//	summer_season_months [6,7,8,9]; 
+//	winter_season_months [1,2,3,4,5,10,11,12];
+	billing_module "test_billing";
+	billing_library "${TESTDIR:-.}";
+};
+
+class sce_residential_tariff
+{
+	parent tariff;
+	double minimum_daily_charge[$/day];
+	double energy_charge_base[$/kWh];
+	double energy_charge_100[$/kWh];
+	double energy_charge_400[$/kWh];
+	//char256 billing_function;
+}
+
+object tariff 
+{
+	name "Residential Rate";
+	rate_design "Tiered Energy Charges";
+	minimum_daily_charge 0.35 $/day;
+	energy_charge_base 0.22 $/kWh;
+	energy_charge_131_400 0.28 $/kWh;
+	energy_charge_400 0.35 $/kWh;
+  	
+}
+
+object tariff 
+{
+	name "CARE Rates";
+	rate_design "Tiered Energy Charges";
+	minimum_daily_charge 0.169 $/day;
+	summer_energy_charge_base 0.17853 $/kWh;
+	summer_energy_charge_131_400 0.22719 $/kWh;
+	summer_energy_charge_400 0.28631 $/kWh;
+	winter_energy_charge_base 0.17853 $/kWh;
+	winter_energy_charge_131_400 0.22719 $/kWh;
+	winter_energy_charge_400 0.28631 $/kWh;
+	
+}
+
+	

@@ -1,21 +1,22 @@
 from datetime import *
 from csv import *
 from dateutil import parser
+import gridlabd 
 
 csvfile = open("billing.csv","w")
 csvwriter = writer(csvfile);
 csvwriter.writerow(["datetime","meter","tariff","billing_days","energy","demand","charges"])
 
 def to_float(x):
-	return float(x.split(' ')[0])
+	return float(x.split(' ')[0])   
 
 def to_datetime(x,format):
 	return parser.parse(x)
 
 def compute_bill(gridlabd,**kwargs):
 
-	verbose = gridlabd.get_global("verbose")=="TRUE"
 	global csvwriter
+	verbose = gridlabd.get_global("verbose")=="TRUE"
 	global csvfile
 
 	# get data
@@ -28,16 +29,17 @@ def compute_bill(gridlabd,**kwargs):
 	baseline = to_float(bill["baseline_demand"])
 	tariff = gridlabd.get_object(bill["tariff"])
 	meter = gridlabd.get_object(bill["meter"])
-	energy = to_float(meter["measured_real_energy"])/1000
+	energy = to_float(meter["measured_real_energy"])/1000  # units in kW
 
 	# get duration
 	clock = to_datetime(gridlabd.get_global('clock'),'%Y-%m-%d %H:%M:%S %Z')
+
 	if not "lastreading" in data.keys():
 		duration = timedelta(0)
 	else:
 		duration = clock - data["lastreading"]
 	data["lastreading"] = clock
-	billing_days = (duration.total_seconds()/86400)
+	billing_days = (duration.total_seconds()/86400) # seconds in a day 
 
 	# compute energy usage
 	if not "lastenergy" in data.keys():
@@ -50,23 +52,23 @@ def compute_bill(gridlabd,**kwargs):
 	tariff_name = tariff["name"]
 	meter_name = meter["name"]
 	if verbose:
-		print(f"Bill '{bill_name}' for meter '{meter_name}' on tariff '{tariff_name}' at time '{clock}':")
-		print(f"  Billing days..... %5.0f    days" % (billing_days))
-		print(f"  Meter reading.... %7.1f  kWh" % (energy))
+		gridlabd.output(f"Bill '{bill_name}' for meter '{meter_name}' on tariff '{tariff_name}' at time '{clock}':")
+		gridlabd.output(f"  Billing days..... %5.0f    days" % (billing_days))
+		gridlabd.output(f"  Meter reading.... %7.1f  kWh" % (energy))
 	if baseline == 0.0:
 		if verbose:
-			print(f"  Energy usage..... %7.1f  kWh" % (usage))
+			gridlabd.output(f"  Energy usage..... %7.1f  kWh" % (usage))
 		charges = usage * to_float(tariff["energy_charge_base"])
 	else:
 		tier1 = min(usage,baseline*billing_days)
 		tier2 = min(usage-tier1,baseline*billing_days*4)
 		tier3 = usage-tier1-tier2
 		if verbose:
-			print(f"  Tier 1 usage..... %7.1f  kWh" % (tier1))
+			gridlabd.output(f"  Tier 1 usage..... %7.1f  kWh" % (tier1))
 			if tier2 > 0:
-				print(f"  Tier 2 usage..... %7.1f  kWh" % (tier2))
+				gridlabd.output(f"  Tier 2 usage..... %7.1f  kWh" % (tier2))
 			if tier3 > 0:
-				print(f"  Tier 3 usage..... %7.1f  kWh" % (tier3))
+				gridlabd.output(f"  Tier 3 usage..... %7.1f  kWh" % (tier3))
 		charges = tier1 * to_float(tariff["energy_charge_base"]) + tier2 *	to_float(tariff["energy_charge_100"]) + tier3 * to_float(tariff["energy_charge_400"])	
 
 	# apply discount, if any
@@ -79,7 +81,7 @@ def compute_bill(gridlabd,**kwargs):
 	if charges < minimum * billing_days:
 		charges = minimum * billing_days
 	if verbose:
-		print(f"  Energy charges... %8.2f US$" % (charges))
+		gridlabd.output(f"  Energy charges... %8.2f US$" % (charges))
 
 	# output billing record only if charges are non-zero
 	if charges > 0:
@@ -91,6 +93,3 @@ def compute_bill(gridlabd,**kwargs):
 	gridlabd.set_value(bill_name,"billing_days",str(billing_days))
 	gridlabd.set_value(bill_name,"energy_charges",str(to_float(bill["energy_charges"])+charges))
 	gridlabd.set_value(bill_name,"total_charges",str(to_float(bill["total_charges"])+charges))
-
-	return
-
