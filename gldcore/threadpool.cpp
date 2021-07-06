@@ -29,17 +29,24 @@ int mti_debug(MTI *mti, const char *fmt, ...)
 
 #ifdef HAVE_GET_NPROCS
 #include <sys/sysinfo.h>
-int processor_count(void) { return get_nprocs(); }
+int processor_count(void) 
+{ 
+	int nprocs = get_nprocs(); 
+	output_debug("processor_count(): get_nprocs() -> %d", nprocs);
+	return nprocs;
+}
 #elif defined(__MACH__)
 #include <sys/param.h>
 #include <sys/sysctl.h>
 int processor_count(void)
 {
-	int count;
-	size_t size = sizeof(count);
-	if (sysctlbyname("hw.ncpu", &count, &size, NULL, 0))
-		return 1;
-	return count;
+	int nprocs = 1;
+	size_t size = sizeof(nprocs);
+	if (sysctlbyname("hw.ncpu", &nprocs, &size, NULL, 0))
+		output_debug("processor_count(): sysctlbyname('hw.ncpu',...) failed, nprocs = %d", nprocs);
+	else
+		output_debug("processor_count(): sysctlbyname('hw.ncpu',...) -> %d", nprocs);
+	return nprocs;
 }
 #else
 int processor_count(void)
@@ -51,12 +58,13 @@ int processor_count(void)
 #elif defined MACOSX
 	int count;
 	size_t count_len = sizeof(count);
-	sysctlbyname("hw.logicalcpu", &count, &count_len, NULL, 0);
-	output_debug("machine has %d logical cores",count);
+	sysctlbyname("processor_count(): hw.logicalcpu", &count, &count_len, NULL, 0);
+	output_debug("processor_count(): machine has %d logical cores",count);
 	return count;	
 #else
 	char *proc_count = getenv("NUMBER_OF_PROCESSORS");
-	int count = proc_count ? atoi(proc_count) : 0;
+	int count = proc_count ? atoi(proc_count) : 1;
+	output_debug("processor_count(): getenv('NUMBER_OF_PROCESSORS') -> %d",count);
 	return count ? count : 1;
 #endif /* WIN32 */
 }
