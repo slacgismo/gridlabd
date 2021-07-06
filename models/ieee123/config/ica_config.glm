@@ -1,0 +1,13 @@
+#input "../ica_config.csv" -f config -t config
+
+#if ${ugl_rating_summer_cont} == 1
+#print ok
+#else
+#error ugl_rating_summer_cont failed
+#endif
+
+#if ${reg_raise_taps} == 1000
+#print ok
+#else
+#error reg_raise_taps failed
+#endif
