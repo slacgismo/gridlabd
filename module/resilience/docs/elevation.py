@@ -14,6 +14,7 @@ from PIL import Image
 import matplotlib.pyplot as plt
 from scipy.interpolate import interp1d
 
+cache_folder = "/tmp"
 CACHE = "/usr/local/share/gridlabd/elevation/10m"
 COMMANDS = ["config","delete","get","help","index","list","path"]
 
