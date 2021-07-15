@@ -1,0 +1,22 @@
+#!/bin/bash
+cd docs
+LIST=$(find User\ manual -print | sort)
+echo "# Table of Contents"
+for ITEM in ${LIST// /_}; do
+	ROOT=$(echo $ITEM | cut -f1 -d/)
+	PART=$(echo $ITEM | cut -f2 -d/)
+	#echo PART=\"$PART\" > /dev/stderr
+	FILE=${ITEM//_/ }
+	#echo FILE=\"$FILE\" > /dev/stderr
+	if [ "$ROOT" == "$PART" ]; then
+		echo -n ""
+	elif [ -d "$FILE" ]; then
+		echo ""
+		echo -n "${ITEM//\//#}" | tr -dc '#'
+		echo " ${FILE##*/}"
+	else
+		echo "  - [[/$FILE~]]"
+	fi
+done
+
+echo ""
